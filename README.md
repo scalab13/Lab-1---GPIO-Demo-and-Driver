@@ -3,12 +3,12 @@ The purpose of this lab is to give you a crash course on the most fundamental wa
 
 ## Assignment
 Blinking an LED and working with GPIO is one of the first things any designer working with a Microcontroller does. If you can blink an LED, then you know your toolchain is setup correctly, the microcontroller is powered up, and you can access the pins with code. A typical workflow for an embedded software developer is to get a peripheral working, and then begin writing a driver for using it within more complex systems. To complete this assignment, you will need to:
-1. Generate a new repository to work in from Github classroom (if you are reading this, you most likely have done this).
-2. Run the example codes from the TI Resource Explorer listed to ensure that you can program your microcontroller and access the GPIO Pins.
-3. Perform simple modifications as described in the assignment folders to experiment with the resource explorer example code and begin getting an idea of the C language for embedded systems.
-4. Using the given example project and files, complete the GPIO Driver file such that the given program operates.
-4. Upload your code with documentation back to your repository.
-5. Update your README.md files with documentation similar to those found in the assignment files.
+- [x] 1. Generate a new repository to work in from Github classroom (if you are reading this, you most likely have done this).
+- [ ] 2. Run the example codes from the TI Resource Explorer listed to ensure that you can program your microcontroller and access the GPIO Pins. Then modify them to achieve a different result.
+- [ ] 3. Find the example code for an general input, and modify it.
+- [ ] 4. Using the given example project and files, complete the GPIO Driver file such that the given program operates.
+- [ ] 5. Upload your code with documentation back to your repository.
+- [ ] 6. Update your README.md files with documentation similar to those found in the assignment files.
 
 
 ## Lab "Report"
