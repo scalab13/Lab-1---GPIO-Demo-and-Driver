@@ -63,18 +63,28 @@ Ok, what just happened? The debugger went through the lines of code up to that p
 
 ### Let's see what that XOR Operation is actually doing
 Now that we paused there, let's use the element inspector to see what exactly is going on _in the processor_. To do this, we are going to go to the Register Tab:
+
 ![Register Inspector](https://i.gyazo.com/acc60cc10edca1c6e1eefd7b0c4c25c4.gif)
+
 This microcontroller has a lot of register, but they are organized based on peripheral. Since we are controlling Pin 1.0, that is on Port 1, or P1. So we are going to expand those registers and look for **P1OUT**.
+
 ![Port 1](https://i.gyazo.com/f36b5fa6e79880474a3c35e7943e3d7d.gif)
+
 HEX is a very common way for us to see bytes of data, but if we wanted to see the individual bits, we can change the base or the way the data is represented by right clicking and changing the number format. We are going to change it to Binary.
+
 ![ChangeNumberFormat](https://i.gyazo.com/79bbe1e8b12ff8622f956e6b78899977.gif)
+
 Now that we can see the individual bits, let's actually step into that line of code and see what the change in the P1OUT Register is.
+
 ![Changing P1OUT](https://i.gyazo.com/cfe72ab822f5c6dbdda479f14f6a4907.gif)
+
 Code Composer will actually highlight registers which have changed values to make your life a little easier. But look at what happened with that line of code: The 0th bit of P1OUT Toggled from a 0 to a 1!. And if you noticed, the LED state on your board should have changed.
 
 ### Manually Changing Registers
 Sometimes it is really useful to be able to change the value of a register. To do this, you need to make sure your code is paused. Then you can actually click on the register and begin custom typing in a value. In the gif below, I am changing the last bit back to a 0. When you finish and hit enter, the debugger with force the microcontroller to load that new register values, and you should be able to see the LED change again.
+
 ![Changing Bit 0](https://i.gyazo.com/48a900d4157a5a138e83ac145dc2541e.gif)
 
+
 ### Removing your breakpoint and continuing execution
-If you want to keep your code running and remove the breakpoint, double clik the breakpoint, or right click it and remove it. Then when you hit the resume button, it will continue running the code like normal. 
+If you want to keep your code running and remove the breakpoint, double clik the breakpoint, or right click it and remove it. Then when you hit the resume button, it will continue running the code like normal.
