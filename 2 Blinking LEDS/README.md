@@ -160,7 +160,8 @@ The file that opens is the **header file** for your microcontroller, and contain
 ### What is this code actually doing
 So taking a look at `P1OUT |= BIT0` let's assume that our 8-Bit Register is initially set as 0x00 (you can confirm this in the microcontroller datasheet).
 > Note: When doing bitwise operators, Code Composer will automatically assume you mean the lowest bits in a larger number.
-
+| Step | Output |
+| ---- | -----|
 | P1OUT (initially) | 0b00000000 |
 | BIT0 | 0b00000001 |
 | `P1OUT|BIT0` | 0b00000001 |
@@ -210,7 +211,9 @@ The MUX is controlled by two other Registers: P1SEL0 and P1SEL1. But why are the
 #### P1DIR - Pin Direction Registers
 ![P1DIR](https://i.gyazo.com/771ec67e0d166629941ca02254992898.png)
 The Tristate Buffer is controlled by the output of the above MUX. It is a little tricky to see in the diagram, but P1SEL0 and P1SEL1 both also control this MUX. This means that by default, this MUX is selecting the 00 input, which is P1DIR.
+
 | P1DIR Value | Tristate Buffer Behaviour | Pin Behaviour |
+| ------------- |-------------| -----|
 | 0 | High-Z, Non-conducting | Input |
 | 1 | Low-Z, Buffer | Output |
 
