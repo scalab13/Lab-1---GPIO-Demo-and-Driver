@@ -126,7 +126,7 @@ Just for a second, let's say that we all knew what all of these Macros and thing
 | Operation        | Syntax           | Result  |
 | ------------- |-------------| -----|
 | Assignment      | = | Take whatever is on the left, and assign its value to the argument on the right |
-| Bitwise OR      | `|`      |   Takes two numbers, and ORs each individual bit together. Result is a number/bit array |
+| Bitwise OR      | \|      |   Takes two numbers, and ORs each individual bit together. Result is a number/bit array |
 | Bitwise AND | `&`      | Takes two numbers and ANDs each bit together. Result is a number or bit array |
 | Bitwise Invert/NOT | `~` | Inverts each bit in the number. For example `~(0101)` becomes `(1010)` |
 | Bitwise XOR | `^` | Takes two numbers an XORs each bit together. Result is a number or bit array |
@@ -166,7 +166,7 @@ So taking a look at `P1OUT |= BIT0` let's assume that our 8-Bit Register is init
 | ---- | -----|
 | P1OUT (initially) | 0b00000000 |
 | BIT0 | 0b00000001 |
-| `P1OUT|BIT0` | 0b00000001 |
+| P1OUT \| BIT0 | 0b00000001 |
 
 Just off this one example, we can see that all we are doing in pretty much every line of code here is **Manipulating Specfic Bits within registers of our microcontroller**. But how is this causing an LED to blink?
 
