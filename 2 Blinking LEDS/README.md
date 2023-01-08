@@ -160,6 +160,8 @@ The file that opens is the **header file** for your microcontroller, and contain
 ### What is this code actually doing
 So taking a look at `P1OUT |= BIT0` let's assume that our 8-Bit Register is initially set as 0x00 (you can confirm this in the microcontroller datasheet).
 > Note: When doing bitwise operators, Code Composer will automatically assume you mean the lowest bits in a larger number.
+
+
 | Step | Output |
 | ---- | -----|
 | P1OUT (initially) | 0b00000000 |
