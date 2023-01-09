@@ -1,54 +1,104 @@
-# Lab Exercise 1: General Purpose Input Output (GPIO) and Driver Files
-The purpose of this lab is to give you a crash course on the most fundamental way a microcontroller can interface with the world: Digital Input and Output. Through the lab you will explore the TI Resource Explorer for examples on how to blink LEDs and Interface with buttons. You will then need to use a provided C file to blink specific LEDs based on the state of a button. You will need to commit a working version of the code, a README containing information about the code, and to demo your work in the following lab period.
+# Part 3: Buttons and Inputs
+_Tasks_
+- [ ] Import a new example for using an Input
+- [ ] SUBMISSION: Creating code which will blink one LED (Red or Green), then based on Button/Input, change which LED is Blinking.
 
-## Assignment
-Blinking an LED and working with GPIO is one of the first things any designer working with a Microcontroller does. If you can blink an LED, then you know your toolchain is setup correctly, the microcontroller is powered up, and you can access the pins with code. A typical workflow for an embedded software developer is to get a peripheral working, and then begin writing a driver for using it within more complex systems. To complete this assignment, you will need to:
-1. Generate a new repository to work in from Github classroom (if you are reading this, you most likely have done this).
-2. Run the example codes from the TI Resource Explorer listed to ensure that you can program your microcontroller and access the GPIO Pins.
-3. Perform simple modifications as described in the assignment folders to experiment with the resource explorer example code and begin getting an idea of the C language for embedded systems.
-4. Using the given example project and files, complete the GPIO Driver file such that the given program operates.
-4. Upload your code with documentation back to your repository.
-5. Update your README.md files with documentation similar to those found in the assignment files.
+# Input Example - msp430fr235x_P1_01.c
+The next example to import is the P1_01 example which can be found in the resource explorer.
+
+![Port 1 Input Example](https://i.gyazo.com/3acad3ccfc135c434fa2406adff36ad0.png)
+
+Here are some of the registers being manipulated in the code:
+
+```c
+P1DIR |= BIT0;                          // Set P1.0 to output direction
+P1DIR &= ~BIT3;                         // Set P1.3 as input
+...
+if (P1IN & BIT3)
+```
+
+## New Registers, same Input/Output Diagrams
+So while this code may look very different, it is still referring to the same Port diagram that we have seen before.
+
+![Port 1 Pin Diagram](https://i.gyazo.com/3b76760bf6708eba2ef282fec1a17566.png)
+
+### Software Explanation
+It seems a little strange at first to see two separate lines of code setting a register to a value; however, note that we are _strictly_ assigning a constant. Instead, we are changing specific bits, a method known as **Non-Destructive Assignment**. This is where we are changing only specific bits at a time, instead of the entire register's value.
+
+#### P1DIR \|= BITO
+Let's assume on a Reset, P1DIR is set to all 0's. This line of code will provide us with.
+```
+P1DIR        0b00000000
+BIT0         0b00000001
+BITWISE OR   0b00000001
+```
+In this case, **only the bits OR'd with a 1 are affected**. This is a non-destructive assignment, where you are not completely re-writing all of the bits in the register.
+
+#### P1DIR &= ~BIT3
+Now that `P1DIR = 0b00000001`, let's real fast cover what that means. Pins 1.7-1.1 are still set as an Input, and now Pin 1.0 is set as an output. You might say "Why are we going to do anything else, if Pin 1.3 is already an input?". It is a good practice since once you get to more complex software designs, you may not know at any given point what the P1DIR register could be set as.
+
+> As a general rule to follow, **always explicitly** declare your control registers.
+
+So let's break down that this line of code.
+```
+P1DIR        0b00000001
+~BIT3        0b11110111
+BITWISE AND  0b00000001
+```
+In this case, **only the bits AND'd with a 0 are affected**. This is a non-destructive assignment to get a specific bit to a 0, while all other bits are unchanged.
+
+#### P1IN & BIT3
+So this is a Bitwise AND, and in this usage, this is called a **MASKING** operation. Assume that `P1IN = 0b01111011`.
+```
+P1IN         0b01111011
+BIT3         0b00001000
+BITWISE AND  0b00001000
+```
+This is called a Mask because we are only attempting to look at what a specific bit or bits within a register or value are equal to. But notably, this results in a *number or value* **not** a logical True or False, so how does this interact with an if statement?
+
+#### if(P1IN & BIT3)
+In C, if statements are conditional statements, which typically are evaluated on a True or False condition. But we have to ask ourselves, in a binary world, what is actually considered True and False? Answer...
+
+* **False:** 0
+* **True:** Anything other than a 0
+
+So looking at this if statement, here are the possible results:
+```
+if(0b00000000)
+  the if statement will not run, as it interprets a False
+
+if(0b00001000)
+  the if statement will run, as it interprets a True
+```
+
+One way that we could write this behavior, but it would use more variables, memory, processing time, etc.
+```c
+int ButtonState = 0;
+if ((P1IN & BIT3) == 0b00001000)
+  ButtonState = 1;
+else if ((P1IN & BIT3) == 0b00000000)
+  ButtonState = 0;
+```
+
+You can see how yes, this does the same thing, but using just the mask as the condition in the if statement can be much more efficient, and can leverage the ways the registers themselves are configured.
+
+### Port Input/Output Diagram
+![Input Portion of Port Schematic](https://i.gyazo.com/93b6ccdf3c20f0c492e559b3191fdee9.png)
+
+The pin is connected through a schmitt trigger directly to the P1IN Register. So once we actually set the port direction, through the tristate buffer, then really, all that is left if just reading the P1IN Register.
 
 
-## Lab "Report"
-Good news! You do not have to write a lab report on what you do in this lab. Instead, we would rather see you develop your documentation skills so that the code you develop can be used by yourself and others in the future. What this means is that you will have to learn how to write what you are reading right now, a README.md. You are responsible for each set of code (.c and .h file) to generate documentation on the software, its use, and how it works.
 
-### Jekyll Markdown
-You might notice a file in your repository with a .yml configuration. This is a configuration file for the built in Github Pages generator to utilize. With each of your repositories, you can actually generate a website for free. Other than the website, you may notice in your repository page that the text below the files are formatted. This also comes from that markdown. There are a ton of guides on how to use Github markdown and it requires no experience with HTML, such as [Mastering Markdown](https://guides.github.com/features/mastering-markdown/).
+# Section Task: Changing which LED Blinks Based on Button Input
+Once you run the example, getting the LEDs to blink and to chose which LEDs should blink is actually not to terrible of a task. You need to create a piece of code which will:
+* Initialize and start blinking the RED LED with a 1 second period.
+* Whenever the Button is off, or the Pin is driven to a 0, then the RED LED should be blinking, and the GREEN LED should stop blinking.
+* Whenever the Button is on, or the Pin is driven to a 1, then the RED LED should stop blinking, and the GREEN LED should start blinking.
+* Note: You do not need to completely turn off the other LED when it changes, however, it is a good challenge to try.
 
-### Documenting your Code
-While a README will provide people a quick look at what is in your repository and maybe cover how to use the functions/library, you still need to thoroughly document your code. I can't stress enough how important it is to really become proficient at writing and document your code. Later on this semester, your documentation skills will be put to the ultimate test, so you need to practice while you can. What I would consider good code documentation is:
-* Does it tell a user who wrote it, when it was written, last time it was updated?
-* Does it tell a user what libraries it is dependent on?
-* Can someone who has never seen your code before _CLEARLY_ understand what your code is doing?
-* Can someone who has to integrate your code into their project understand the expected input formats and what outputs there are?
+The deliverable for this section task is to upload a commented C file containing your work, an appropriate author block, and appropriate comments and variable names such that it is easy to see what you have done.
 
-In terms of a target audience (since some of you will like to think this way) you are writing for someone who has been searching on Google on how to do what the assignment is. For this preliminary assignment it might seem trivial, but as the semester moves on, you will be dependent on each others code in order to perform a particular complicated task.
-
-## Submitting Code and Documentation
-Since we are utilizing GitHub Classroom, it is your job to push your final commits to this repository before the deadline laid out in the syllabus. Once this deadline has passed, whatever code is on your repository will be treated as your submission.
-
-### "But I ran out of time. I was busy with other classes."
-You have to realize these lab exercises, especially early in the semester, are your homework and essentially your out of time commitment to the class. You are going to learn in this class by doing, so we are expecting your time in the class and outside to be spent doing. If you can not manage your time in such a way to finish these labs, you need to talk with the professors or the TAs to figure out what is going on. These lab exercises are meant to only take at most 5-6 hours a week including debugging. Not to mention the fact that you have the internet, tutorials, forums, documentation, app notes, etc. and these labs are designed to make you use these resources. We do not want you to re-invent the wheel. We want you to understand the wheel and begin to build customized applications with the wheel. If you are spending hours debugging a simple piece of code, you need to take a step back and tell yourself "I am not the first person to do this." This will put you in a better mindset and hopefully let your rethink the problem.
-
-## Grading Scheme
-Currently, your repository will be graded on the following pillars:
-* Does your code work?
-* Is your code documented and the quality of documentation?
-* How easy is it to utilize/implement your code?
-
-## "Why are we using GIT? Can't we just use Canvas or something?"
-The main reason we are utilizing git is so we can generate libraries of example code and drivers for you to use in the future and show to potential employers what you have done. It also provides you easy ways to manage code-bases using built-in feature such as versioning and branches. We know at first if you have never used GIT that it is going to seem like way too much of a hassle for what it is worth; but let me tell you, people last year were saved because they were able to go back to previous versions of their code base.
-
-### Git Tools
-For GIT, I recommend two main tools that you should grab:
-* GIT Bash
-* GITKraken
-Each of these will allow you to access you repository on your machine and perform all of the basic GIT tasks required. While you can get away with just one of these tools, it is really helpful to learn how to manage a repository both via command line and by a GUI program. Both of these tools are available for free.
-
-#### Git Bash
-Git bash will allow you to access and manage repositories through your command line or terminal. You need to go to [git](https://git-scm.com/downloads) for any OS. What this puts on your machine is the ability to utilize GIT repositories as well as add certain functions to your right-click if you are a Windows user. For MacOS and Linux, you already have a unix terminal built into the OS so you are just adding the GIT functionality. From here, you are able to start out with any tutorials you can find or are provided to you.
-
-#### GitKraken
-For this GUI, you will need to head over to [Axisoft](https://www.gitkraken.com/download) to get the client. This client is available for Windows, Mac, and Linux. Once you have installed it, it is pretty simple to get started: [GitKraken Setup Tutorial](https://youtu.be/ZKkMwTeAij4). You can get GitKraken for FREE as a student through the [Github Student Developers Kit](https://education.github.com/pack).
+Some advice:
+* Use __delay_cycles(), do not panic about precision timing yet.
+* You can use any methods you wish, ranging from the masking to using dummy or placeholder variables.
+* It is up to you how you want to do this, but I recommend not just compiling on a prayer. Take a minute, a piece of paper, and actually pseudocode the behavior you want.
