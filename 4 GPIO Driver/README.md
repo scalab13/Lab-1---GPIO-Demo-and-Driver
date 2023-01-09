@@ -1,54 +1,106 @@
-# Lab Exercise 1: General Purpose Input Output (GPIO) and Driver Files
-The purpose of this lab is to give you a crash course on the most fundamental way a microcontroller can interface with the world: Digital Input and Output. Through the lab you will explore the TI Resource Explorer for examples on how to blink LEDs and Interface with buttons. You will then need to use a provided C file to blink specific LEDs based on the state of a button. You will need to commit a working version of the code, a README containing information about the code, and to demo your work in the following lab period.
+# GPIO Driver Assignment
+Now that you have become familiar with the GPIO Peripheral, we can now begin working on a general driver, which will let you write higher level code, and abstract some specific things about the microcontroller away. This resulting code is something that you will be able to use in your projects and in future labs.
 
 ## Assignment
-Blinking an LED and working with GPIO is one of the first things any designer working with a Microcontroller does. If you can blink an LED, then you know your toolchain is setup correctly, the microcontroller is powered up, and you can access the pins with code. A typical workflow for an embedded software developer is to get a peripheral working, and then begin writing a driver for using it within more complex systems. To complete this assignment, you will need to:
-1. Generate a new repository to work in from Github classroom (if you are reading this, you most likely have done this).
-2. Run the example codes from the TI Resource Explorer listed to ensure that you can program your microcontroller and access the GPIO Pins.
-3. Perform simple modifications as described in the assignment folders to experiment with the resource explorer example code and begin getting an idea of the C language for embedded systems.
-4. Using the given example project and files, complete the GPIO Driver file such that the given program operates.
-4. Upload your code with documentation back to your repository.
-5. Update your README.md files with documentation similar to those found in the assignment files.
+In this folder, there are the following files:
+* **main.c:** A program which will control which LED is blinking based on the state of a button.
+* **GPIO_Driver.h:** The header file containing the function definitions which you will be developing.
+* **GPIO_Driver.c:** The c file containing the code for the functions defined in the GPIO_Driver.h.
+
+You **only need to edit GPIO_Driver.c**, while in the other files, you need to update the author block.
+
+You will need to upload your version of these files, updated with comments, author blocks, and any additions to the code you have made.
+
+## Functions you need to implement
+
+### gpioInit(char Port, char Pin, char Direction)
+Used to configure a single GPIO pin as an input or output.
+
+Arguments:
+* char **Port**: takes values from 1-6
+* char **Pin**: takes values from 0-7
+* char **Direction**: 0 for Input, 1 for Output
+
+Example: Setting pin 1.0 to an output
+```c
+gpioInit(1, 0, 1);
+```
 
 
-## Lab "Report"
-Good news! You do not have to write a lab report on what you do in this lab. Instead, we would rather see you develop your documentation skills so that the code you develop can be used by yourself and others in the future. What this means is that you will have to learn how to write what you are reading right now, a README.md. You are responsible for each set of code (.c and .h file) to generate documentation on the software, its use, and how it works.
+### gpioWrite(char Port, char Pin, char Value)
+Used to write a 1 or 0 to a Pin which has already been declared as an output.
 
-### Jekyll Markdown
-You might notice a file in your repository with a .yml configuration. This is a configuration file for the built in Github Pages generator to utilize. With each of your repositories, you can actually generate a website for free. Other than the website, you may notice in your repository page that the text below the files are formatted. This also comes from that markdown. There are a ton of guides on how to use Github markdown and it requires no experience with HTML, such as [Mastering Markdown](https://guides.github.com/features/mastering-markdown/).
+Arguments:
+ * char **Port**: takes values from 1-6
+ * char **Pin**: takes values from 0-7
+ * char **Value**: 0 or 1
 
-### Documenting your Code
-While a README will provide people a quick look at what is in your repository and maybe cover how to use the functions/library, you still need to thoroughly document your code. I can't stress enough how important it is to really become proficient at writing and document your code. Later on this semester, your documentation skills will be put to the ultimate test, so you need to practice while you can. What I would consider good code documentation is:
-* Does it tell a user who wrote it, when it was written, last time it was updated?
-* Does it tell a user what libraries it is dependent on?
-* Can someone who has never seen your code before _CLEARLY_ understand what your code is doing?
-* Can someone who has to integrate your code into their project understand the expected input formats and what outputs there are?
+Example: Setting pin 1.0 to a 1
+```c
+gpioWrite(1, 0, 1);
+```
 
-In terms of a target audience (since some of you will like to think this way) you are writing for someone who has been searching on Google on how to do what the assignment is. For this preliminary assignment it might seem trivial, but as the semester moves on, you will be dependent on each others code in order to perform a particular complicated task.
 
-## Submitting Code and Documentation
-Since we are utilizing GitHub Classroom, it is your job to push your final commits to this repository before the deadline laid out in the syllabus. Once this deadline has passed, whatever code is on your repository will be treated as your submission.
+### gpioRead(char Port, char Pin, char Value)
+Used to Read from a pin which has been declared as an input.
 
-### "But I ran out of time. I was busy with other classes."
-You have to realize these lab exercises, especially early in the semester, are your homework and essentially your out of time commitment to the class. You are going to learn in this class by doing, so we are expecting your time in the class and outside to be spent doing. If you can not manage your time in such a way to finish these labs, you need to talk with the professors or the TAs to figure out what is going on. These lab exercises are meant to only take at most 5-6 hours a week including debugging. Not to mention the fact that you have the internet, tutorials, forums, documentation, app notes, etc. and these labs are designed to make you use these resources. We do not want you to re-invent the wheel. We want you to understand the wheel and begin to build customized applications with the wheel. If you are spending hours debugging a simple piece of code, you need to take a step back and tell yourself "I am not the first person to do this." This will put you in a better mindset and hopefully let your rethink the problem.
+Arguments:
+ * char **Port**: takes values from 1-6
+ * char **Pin**: takes values from 0-7
+Returns:
+ * 1 or 0 based on pin value.
+Example: Reading Pin 1.1
+```c
+unsigned char PinState = gpioRead(1, 1);
+```
 
-## Grading Scheme
-Currently, your repository will be graded on the following pillars:
-* Does your code work?
-* Is your code documented and the quality of documentation?
-* How easy is it to utilize/implement your code?
 
-## "Why are we using GIT? Can't we just use Canvas or something?"
-The main reason we are utilizing git is so we can generate libraries of example code and drivers for you to use in the future and show to potential employers what you have done. It also provides you easy ways to manage code-bases using built-in feature such as versioning and branches. We know at first if you have never used GIT that it is going to seem like way too much of a hassle for what it is worth; but let me tell you, people last year were saved because they were able to go back to previous versions of their code base.
+## Advice and Getting Started
+When you are trying to write a driver or a generalized piece of code, a great place to start is with the code you already have working. So for example, while there is a main.c file that you will need to test your final code with, I would recommend trying to replicate the examples you have already done with these functions.
 
-### Git Tools
-For GIT, I recommend two main tools that you should grab:
-* GIT Bash
-* GITKraken
-Each of these will allow you to access you repository on your machine and perform all of the basic GIT tasks required. While you can get away with just one of these tools, it is really helpful to learn how to manage a repository both via command line and by a GUI program. Both of these tools are available for free.
+### Encapsulating and Abstracting your Code
+You can start by looking at what lines of code are doing which functions, and breaking them down into those groups. For example, looking at the LED Blinking example, can you break it down into:
+* Which lines of code are **initializing** the pins and ports?
+* Which lines of code are **writing** values to the pins?
+* Which lines of code are **reading** values from the pins?
 
-#### Git Bash
-Git bash will allow you to access and manage repositories through your command line or terminal. You need to go to [git](https://git-scm.com/downloads) for any OS. What this puts on your machine is the ability to utilize GIT repositories as well as add certain functions to your right-click if you are a Windows user. For MacOS and Linux, you already have a unix terminal built into the OS so you are just adding the GIT functionality. From here, you are able to start out with any tutorials you can find or are provided to you.
+In general, most of your code in this class should end up looking something like:
+```c
+gpioInit();
+timerInit();
+adcInit();
+while (1){
+  readADC();
+  setPWM();
+  ...
+}
+```
+This does several things:
+* It *abstracts* away the specifics of the registers, allowing you to work on separate parts of the code without interfering with others.
+* It *encapsulates* functionality, so that you can thinking about your code from a higher level, and determine what functionality you will need to develop.
 
-#### GitKraken
-For this GUI, you will need to head over to [Axisoft](https://www.gitkraken.com/download) to get the client. This client is available for Windows, Mac, and Linux. Once you have installed it, it is pretty simple to get started: [GitKraken Setup Tutorial](https://youtu.be/ZKkMwTeAij4). You can get GitKraken for FREE as a student through the [Github Student Developers Kit](https://education.github.com/pack).
+### Switch Case Statements
+These are very useful and can be one way you approach how the inputs are handled in your functions.
+```c
+switch(expression) {
+
+   case constant-expression  :
+      statement(s);
+      break; /* optional */
+
+   case constant-expression  :
+      statement(s);
+      break; /* optional */
+
+   /* you can have any number of case statements */
+   default : /* Optional */
+   statement(s);
+}
+```
+### Efficiency
+As of right now, you are just getting something that works. If you can get something working, you can then begin thinking about efficiency after that. **DO NOT** worry about how efficient or elegant your code is. Those types of things come with practice and familiarity with the language. What matters is that your code works. We are not counting cycles and microwatts, so a little extra work to get something done isnt going to cause many issues.
+
+### Commenting and Naming
+Not only is this good practice, it is a major part of your grade in these assignments. Making code that is readable, easy to implement, and easy to augment is the name of the game. It is tempting just to use basic, 1 letter names for things, but use actual words for your variables. Does it take a little longer to write? Sure. Will it save you much more time later whe you are looking back at this and trying to figure out what you did? Absolutely.
+
+Comments are not just for others, they are for you as well. Many of you might try to knock this out in one sitting, and when you do that, your brain is still in the same headspace and all the little things you were keeping track of and reasoning why you did things make sense now. But once you try to come back to it, all of those details are lost and are extremely hard to get back. Any time you make a decision to do something in your code, **comment why you did it**. This should read like a book almost, and anyone looking at it should not only understand what you have written, but why you approached it that way.
