@@ -1,0 +1,36 @@
+#include <msp430.h>
+
+void gpioInit();
+
+void main(void)
+{
+    WDTCTL = WDTPW | WDTHOLD;
+    PM5CTL0 &= ~LOCKLPM5;
+    gpioInit();
+
+    while(1){
+        if(P4IN & BIT1)  {   // If P4.1 is pressed
+            P6OUT ^= BIT6; // Toggle Green LED
+             P1OUT &= BIT0; //Red OFF
+                }
+
+        else {
+            P1OUT ^= BIT0; // Toggle Red LED
+            P6OUT &= BIT6; // Green Off
+        }// For SW2 on P4.1
+        P4DIR &= ~BIT1;  // Configure Pin 4.1 to an input
+        P4REN |= BIT1;    // Enable the pull up/down resistor for Pin 4.1
+        P4OUT |= BIT1;    // While configured as an input, P4OUT controls whether
+                          // the Resistor is a pull up or pull down
+
+
+
+            _delay_cycles(100000);
+    }
+}
+
+void gpioInit(){
+    P1DIR |= BIT0;   //P1.0 Output to Red LED
+    P6DIR |= BIT6;  // P6.6 Output to Green LED
+    P1DIR &= ~BIT3;
+}
